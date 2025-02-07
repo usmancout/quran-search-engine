@@ -2,30 +2,29 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import styles from '../../styles/styles';
 
-const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loading, setAyahCount, setSearchTerm }) => {
-    const [searchInput, setSearchInput] = useState('');
+const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loading, setAyahCount }) => {
+    const [searchTerm, setSearchTerm] = useState('');
 
     const searchQuran = async (e) => {
         e.preventDefault();
-        if (!searchInput) return;
+        if (!searchTerm) return;
 
         setLoading(true);
         setError('');
         setResults([]);
         setAyahCount(0); // Reset ayah count
-        setSearchTerm(searchInput); // Set the searched keyword
 
         try {
             let searchResults = [];
-            const isReference = /^\d+(:\d+)?$/.test(searchInput);
+            const isReference = /^\d+(:\d+)?$/.test(searchTerm);
 
             if (isReference) {
                 const response = await axios.get(
-                    `http://api.alquran.cloud/v1/ayah/${searchInput}/editions/ar.alafasy,${edition}`
+                    `http://api.alquran.cloud/v1/ayah/${searchTerm}/editions/ar.alafasy,${edition}`
                 );
                 const data = response.data.data;
                 searchResults.push({
-                    reference: searchInput,
+                    reference: searchTerm,
                     arabicText: data[0].text,
                     translatedText: data[1].text,
                     surahName: data[0].surah.name,
@@ -34,7 +33,7 @@ const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loa
                 });
                 setAyahCount(1); // Set ayah count to 1 for a single reference
             } else {
-                const response = await axios.get(`https://api.alquran.cloud/v1/search/${searchInput}/all/en`);
+                const response = await axios.get(`https://api.alquran.cloud/v1/search/${searchTerm}/all/en`);
                 const matches = response.data.data.matches;
 
                 for (let match of matches) {
@@ -71,8 +70,8 @@ const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loa
         <form onSubmit={searchQuran} style={styles.searchForm}>
             <input
                 type="text"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Enter keyword or ayah reference (e.g., patience, 2:255)"
                 style={styles.input}
             />

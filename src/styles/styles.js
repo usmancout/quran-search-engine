@@ -65,7 +65,7 @@ const styles = {
         fontSize: '24px',
         textAlign: 'right',
         marginBottom: '10px',
-        fontFamily: '"Traditional Arabic", serif',
+        fontFamily: '"Scheherazade New", serif',
         lineHeight: 1.6,
     },
     translation: {
@@ -93,16 +93,11 @@ const styles = {
         fontSize: '14px',
         transition: 'background-color 0.3s',
     },
-    ayahInfo: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        margin: '20px 0',
-        padding: '10px',
-        backgroundColor: '#f9f9f9',
-        borderRadius: '6px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        fontSize: '18px',
+    ayahCount: {
+        textAlign: 'center',
         color: '#2c3e50',
+        fontSize: '18px',
+        margin: '20px 0',
     },
 };
 

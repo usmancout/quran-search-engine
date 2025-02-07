@@ -10,7 +10,6 @@ function App() {
     const [error, setError] = useState('');
     const [edition, setEdition] = useState('en.asad');
     const [ayahCount, setAyahCount] = useState(0); // State to hold the count of ayahs found
-    const [searchTerm, setSearchTerm] = useState(''); // State to hold the searched keyword
 
     const playAudio = (audioUrl) => {
         const audio = new Audio(audioUrl);
@@ -29,19 +28,13 @@ function App() {
                 setEdition={setEdition}
                 loading={loading}
                 setAyahCount={setAyahCount} // Pass setAyahCount to SearchForm
-                setSearchTerm={setSearchTerm} // Pass setSearchTerm to SearchForm
             />
 
             {error && <p style={styles.error}>{error}</p>}
 
             {loading && <p style={styles.loading}>Searching through verses...</p>}
 
-            {ayahCount > 0 && (
-                <div style={styles.ayahInfo}>
-                    <p>Searched Keyword: {searchTerm}</p>
-                    <p>Number of Ayats found: {ayahCount}</p>
-                </div>
-            )}
+            {ayahCount > 0 && <p style={styles.ayahCount}>{ayahCount} ayahs found</p>} {/* Display the ayah count */}
 
             <Results results={results} playAudio={playAudio} />
         </Container>
