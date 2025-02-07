@@ -12,25 +12,30 @@ const styles = {
     },
     searchForm: {
         display: 'flex',
+        flexWrap: 'wrap',
         gap: '10px',
         marginBottom: '30px',
     },
     input: {
-        flex: 1,
+        flex: '1 1 60%',
         padding: '12px',
         fontSize: '16px',
         border: '2px solid #ddd',
         borderRadius: '6px',
         outline: 'none',
+        minWidth: '200px',
     },
     select: {
+        flex: '1 1 30%',
         padding: '12px',
         fontSize: '16px',
         border: '2px solid #ddd',
         borderRadius: '6px',
         outline: 'none',
+        minWidth: '150px',
     },
     button: {
+        flex: '1 1 100%',
         padding: '12px 24px',
         backgroundColor: '#2c3e50',
         color: 'white',
@@ -56,16 +61,18 @@ const styles = {
         justifyContent: 'space-between',
         marginBottom: '10px',
         color: '#666',
+        flexWrap: 'wrap',
     },
     reference: {
         fontSize: '14px',
         fontWeight: 'bold',
+        flex: '1 1 100%',
     },
     arabicText: {
         fontSize: '24px',
         textAlign: 'right',
         marginBottom: '10px',
-        fontFamily: '"Scheherazade New", serif',
+        fontFamily: '"Traditional Arabic", serif',
         lineHeight: 1.6,
     },
     translation: {
@@ -93,11 +100,49 @@ const styles = {
         fontSize: '14px',
         transition: 'background-color 0.3s',
     },
-    ayahCount: {
-        textAlign: 'center',
-        color: '#2c3e50',
-        fontSize: '18px',
+    ayahInfo: {
+        display: 'flex',
+        justifyContent: 'space-between',
         margin: '20px 0',
+        padding: '10px',
+        backgroundColor: '#f9f9f9',
+        borderRadius: '6px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        fontSize: '18px',
+        color: '#2c3e50',
+        flexWrap: 'wrap',
+    },
+    ayahInfoText: {
+        flex: '1 1 100%',
+        textAlign: 'center',
+    },
+    '@media (max-width: 768px)': {
+        input: {
+            flex: '1 1 100%',
+        },
+        select: {
+            flex: '1 1 100%',
+        },
+        button: {
+            flex: '1 1 100%',
+        },
+        verseInfo: {
+            flexDirection: 'column',
+        },
+        reference: {
+            textAlign: 'center',
+        },
+        ayahInfoText: {
+            textAlign: 'center',
+        },
+    },
+    '@media (max-width: 480px)': {
+        arabicText: {
+            fontSize: '20px',
+        },
+        translation: {
+            fontSize: '14px',
+        },
     },
 };
 
