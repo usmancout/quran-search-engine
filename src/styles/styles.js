@@ -92,7 +92,18 @@ const styles = {
         cursor: 'pointer',
         fontSize: '14px',
         transition: 'background-color 0.3s',
-    }
+    },
+    ayahInfo: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        margin: '20px 0',
+        padding: '10px',
+        backgroundColor: '#f9f9f9',
+        borderRadius: '6px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        fontSize: '18px',
+        color: '#2c3e50',
+    },
 };
 
 export default styles;
