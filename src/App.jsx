@@ -6,6 +6,7 @@ function App() {
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [edition, setEdition] = useState('en.asad'); // Default edition
 
     const searchQuran = async (e) => {
         e.preventDefault();
@@ -16,15 +17,44 @@ function App() {
         setResults([]);
 
         try {
-            const response = await axios.get(`https://api.alquran.cloud/v1/search/${searchTerm}/all/en`);
-            const searchResults = response.data.data.matches.map(match => ({
-                reference: `${match.surah.number}:${match.numberInSurah}`,
-                arabicText: match.text,
-                englishText: match.text,
-                surahName: match.surah.name,
-                surahEnglishName: match.surah.englishName,
-                audioUrl: `https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/${match.surah.number}/${match.numberInSurah}`
-            }));
+            let searchResults = [];
+            // Check if the searchTerm is a reference (e.g., 2:255 or 262)
+            const isReference = /^\d+(:\d+)?$/.test(searchTerm);
+
+            if (isReference) {
+                // Fetch the ayah by reference
+                const response = await axios.get(
+                    `http://api.alquran.cloud/v1/ayah/${searchTerm}/editions/ar.alafasy,${edition}`
+                );
+                const data = response.data.data;
+                searchResults.push({
+                    reference: searchTerm,
+                    arabicText: data[0].text,
+                    translatedText: data[1].text,
+                    surahName: data[0].surah.name,
+                    surahEnglishName: data[0].surah.englishName,
+                    audioUrl: data[0].audio
+                });
+            } else {
+                // Fetch ayahs by keyword
+                const response = await axios.get(`https://api.alquran.cloud/v1/search/${searchTerm}/all/${edition}`);
+                searchResults = await Promise.all(
+                    response.data.data.matches.map(async match => {
+                        const reference = `${match.surah.number}:${match.numberInSurah}`;
+                        const res = await axios.get(
+                            `http://api.alquran.cloud/v1/ayah/${reference}/editions/ar.alafasy,${edition}`
+                        );
+                        return {
+                            reference: reference,
+                            arabicText: res.data.data[0].text,
+                            translatedText: res.data.data[1].text,
+                            surahName: res.data.data[0].surah.name,
+                            surahEnglishName: res.data.data[0].surah.englishName,
+                            audioUrl: res.data.data[0].audio
+                        };
+                    })
+                );
+            }
 
             setResults(searchResults);
             if (searchResults.length === 0) {
@@ -52,9 +82,15 @@ function App() {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Enter keyword (e.g., patience, mercy)"
+                    placeholder="Enter keyword or ayah reference (e.g., patience, 2:255)"
                     style={styles.input}
                 />
+                <select value={edition} onChange={(e) => setEdition(e.target.value)} style={styles.select}>
+                    <option value="en.asad">English - Asad</option>
+                    <option value="ur.jalandhry">Urdu - Jalandhry</option>
+                    <option value="en.pickthall">English - Pickthall</option>
+                    {/* Add more editions as needed */}
+                </select>
                 <button type="submit" style={styles.button} disabled={loading}>
                     {loading ? 'Searching...' : 'Search'}
                 </button>
@@ -76,7 +112,7 @@ function App() {
                             </span>
                         </div>
                         <p style={styles.arabicText}>{result.arabicText}</p>
-                        <p style={styles.translation}>{result.englishText}</p>
+                        <p style={styles.translation}>{result.translatedText}</p>
                         <button
                             onClick={() => playAudio(result.audioUrl)}
                             style={styles.audioButton}
@@ -109,6 +145,13 @@ const styles = {
     },
     input: {
         flex: 1,
+        padding: '12px',
+        fontSize: '16px',
+        border: '2px solid #ddd',
+        borderRadius: '6px',
+        outline: 'none',
+    },
+    select: {
         padding: '12px',
         fontSize: '16px',
         border: '2px solid #ddd',
