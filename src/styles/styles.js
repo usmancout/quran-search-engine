@@ -1,4 +1,36 @@
 const styles = {
+
+    modalOverlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        padding: '20px',
+        borderRadius: '8px',
+        textAlign: 'center',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+        minWidth: '300px',
+        position: 'relative',
+    },
+    closeIcon: {
+        position: 'absolute',
+        top: '10px',
+        right: '15px',
+        fontSize: '22px',
+        cursor: 'pointer',
+        color: '#333',
+    },
+
+
     container: {
         maxWidth: '800px',
         margin: '0 auto',
@@ -12,12 +44,14 @@ const styles = {
     },
     searchForm: {
         display: 'flex',
-        flexWrap: 'wrap',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         gap: '10px',
         marginBottom: '30px',
+        flexWrap: 'nowrap',
     },
     input: {
-        flex: '1 1 60%',
+        flex: '1 1 50%',
         padding: '12px',
         fontSize: '16px',
         border: '2px solid #ddd',
@@ -26,16 +60,16 @@ const styles = {
         minWidth: '200px',
     },
     select: {
-        flex: '1 1 30%',
+        flex: '1 1 20%',
         padding: '12px',
         fontSize: '16px',
         border: '2px solid #ddd',
         borderRadius: '6px',
         outline: 'none',
-        minWidth: '150px',
+        minWidth: '120px',
     },
     button: {
-        flex: '1 1 100%',
+        flex: '1 1 auto',
         padding: '12px 24px',
         backgroundColor: '#2c3e50',
         color: 'white',
@@ -44,6 +78,7 @@ const styles = {
         cursor: 'pointer',
         fontSize: '16px',
         transition: 'background-color 0.3s',
+        whiteSpace: 'nowrap',
     },
     results: {
         display: 'flex',
@@ -117,6 +152,10 @@ const styles = {
         textAlign: 'center',
     },
     '@media (max-width: 768px)': {
+        searchForm: {
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+        },
         input: {
             flex: '1 1 100%',
         },

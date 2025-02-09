@@ -18,7 +18,7 @@ function App() {
 
     return (
         <Container>
-            <h1 style={styles.title}>Quran Search Engine</h1>
+            <h1 style={styles.title}>Quran Search </h1>
 
             <SearchForm
                 setResults={setResults}
