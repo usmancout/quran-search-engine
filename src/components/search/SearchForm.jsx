@@ -20,7 +20,7 @@ const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loa
 
             if (isReference) {
                 const response = await axios.get(
-                    `http://api.alquran.cloud/v1/ayah/${searchTerm}/editions/ar.alafasy,${edition}`
+                    `https://api.alquran.cloud/v1/ayah/${searchTerm}/editions/ar.alafasy,${edition}`
                 );
                 const data = response.data.data;
                 searchResults.push({
@@ -39,7 +39,7 @@ const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loa
                 for (let match of matches) {
                     const reference = `${match.surah.number}:${match.numberInSurah}`;
                     const res = await axios.get(
-                        `http://api.alquran.cloud/v1/ayah/${reference}/editions/ar.alafasy,${edition}`
+                        `https://api.alquran.cloud/v1/ayah/${reference}/editions/ar.alafasy,${edition}`
                     );
                     const data = res.data.data;
                     searchResults.push({
