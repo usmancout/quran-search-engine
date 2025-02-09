@@ -23,10 +23,10 @@ const ResultCard = ({ result }) => {
     return (
         <div style={styles.resultCard}>
             <div style={styles.verseInfo}>
-                <span style={styles.reference}>
+                <span style={styles.surahName}>
                     Surah {result.surahName} ({result.surahEnglishName})
                 </span>
-                <span style={styles.reference}>
+                <span style={styles.verseNumber}>
                     Verse {result.reference}
                 </span>
             </div>
@@ -41,16 +41,18 @@ const ResultCard = ({ result }) => {
                 <div style={styles.modalOverlay}>
                     <div style={styles.modalContent}>
                         <span style={styles.closeIcon} onClick={closeAudioModal}>✖</span>
-                        <h3>Recitation</h3>
-                        <audio
-                            ref={audioRef}
-                            controls
-                            onEnded={closeAudioModal}
-                            autoPlay
-                        >
-                            <source src={result.audioUrl} type="audio/mpeg" />
-                            Your browser does not support the audio element.
-                        </audio>
+                        <div style={styles.audioContainer}>
+                            <audio
+                                ref={audioRef}
+                                controls
+                                onEnded={closeAudioModal}
+                                autoPlay
+                                style={styles.audioPlayer}
+                            >
+                                <source src={result.audioUrl} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
                     </div>
                 </div>
             )}
