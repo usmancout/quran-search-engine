@@ -167,7 +167,7 @@ const styles = {
     loadMoreButton: {
         display: 'block',
         margin: '0',
-        padding: '8px 8px',
+        padding: '10px 10px',
         backgroundColor: '#ec6464',
         color: 'white',
         border: 'none',
@@ -178,7 +178,7 @@ const styles = {
         whiteSpace: 'nowrap',
         position: 'fixed',
         bottom: '20px',
-        right: '310px',
+        right: '20px',
         left: 'auto',
         transform: 'none',
     },
