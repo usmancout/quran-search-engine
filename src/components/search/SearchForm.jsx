@@ -7,86 +7,30 @@ const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loa
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [results, setLocalResults] = useState([]);
-    const [showLoadMore, setShowLoadMore] = useState(false);
-    const RESULTS_PER_PAGE = 20;
+
+    const RESULTS_PER_PAGE = 20; // Number of results to load per page
 
     const api = axios.create({
         baseURL: 'https://api.alquran.cloud/v1',
         timeout: 15000
     });
 
+    // Handle scroll event to trigger loadMore
     useEffect(() => {
-        let lastScrollY = window.scrollY;
-
         const handleScroll = () => {
             const isAtBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 50;
-            const isScrollingDown = window.scrollY > lastScrollY;
 
-            if (isAtBottom && isScrollingDown) {
-                setShowLoadMore(true);
-            } else {
-                setShowLoadMore(false);
+            // Automatically load more when user reaches the bottom
+            if (isAtBottom && hasMore && !loading) {
+                loadMore();
             }
-
-            lastScrollY = window.scrollY;
         };
 
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [hasMore, loading]);
 
-    const getSearchLanguage = (editionCode) => {
-        if (editionCode.startsWith('ur')) return 'ur';
-        if (editionCode.startsWith('ar')) return 'ar';
-        return 'en';
-    };
-
-    const processInBatches = async (matches, startIndex) => {
-        const results = [];
-        const batchSize = 10;
-        const endIndex = Math.min(startIndex + RESULTS_PER_PAGE, matches.length);
-        const relevantMatches = matches.slice(startIndex, endIndex);
-
-        for (let i = 0; i < relevantMatches.length; i += batchSize) {
-            const batch = relevantMatches.slice(i, Math.min(i + batchSize, relevantMatches.length));
-
-            const batchPromises = batch.map(match => {
-                const reference = `${match.surah.number}:${match.numberInSurah}`;
-                return api.get(`/ayah/${reference}/editions/ar.alafasy,${edition}`)
-                    .then(response => ({
-                        reference,
-                        arabicText: response.data.data[0].text,
-                        translatedText: response.data.data[1].text,
-                        surahName: response.data.data[0].surah.name,
-                        surahEnglishName: response.data.data[0].surah.englishName,
-                        surahNumber: response.data.data[0].surah.number,
-                        ayahNumber: response.data.data[0].numberInSurah,
-                        juz: response.data.data[0].juz,
-                        page: response.data.data[0].page,
-                        audioUrl: response.data.data[0].audio,
-                        searchScore: match.score || 0
-                    }))
-                    .catch(error => ({
-                        reference,
-                        error: true,
-                        message: error.message
-                    }));
-            });
-
-            try {
-                const batchResults = await Promise.all(batchPromises);
-                const validResults = batchResults.filter(result => !result.error);
-                results.push(...validResults);
-                setLocalResults(prevResults => [...prevResults, ...validResults]);
-                setResults(prevResults => [...prevResults, ...validResults]);
-            } catch (error) {
-                console.error('Batch processing error:', error);
-            }
-        }
-
-        return results;
-    };
-
+    // Fetch search results
     const searchQuran = useCallback(async (e, newSearch = true) => {
         e?.preventDefault();
         if (!searchTerm.trim()) return;
@@ -138,7 +82,12 @@ const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loa
 
                 setAyahCount(matches.length);
                 const startIndex = (page - 1) * RESULTS_PER_PAGE;
-                setHasMore(startIndex + RESULTS_PER_PAGE < matches.length);
+                const endIndex = startIndex + RESULTS_PER_PAGE;
+
+                // Check if there are more results to load
+                setHasMore(endIndex < matches.length);
+
+                // Process results in batches
                 const batchResults = await processInBatches(matches, startIndex);
                 setLocalResults(prevResults => [...prevResults, ...batchResults]);
                 setResults(prevResults => [...prevResults, ...batchResults]);
@@ -150,13 +99,60 @@ const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loa
         }
     }, [searchTerm, edition, page, setResults, setLoading, setError, setAyahCount]);
 
-    const loadMore = (e) => {
+    // Load more results
+    const loadMore = () => {
         if (!loading && hasMore) {
             setPage(prev => prev + 1);
-            searchQuran(e, false);
+            searchQuran(null, false);
         }
     };
 
+    // Process results in batches
+    const processInBatches = async (matches, startIndex) => {
+        const results = [];
+        const batchSize = 10;
+        const endIndex = Math.min(startIndex + RESULTS_PER_PAGE, matches.length);
+        const relevantMatches = matches.slice(startIndex, endIndex);
+
+        for (let i = 0; i < relevantMatches.length; i += batchSize) {
+            const batch = relevantMatches.slice(i, Math.min(i + batchSize, relevantMatches.length));
+
+            const batchPromises = batch.map(match => {
+                const reference = `${match.surah.number}:${match.numberInSurah}`;
+                return api.get(`/ayah/${reference}/editions/ar.alafasy,${edition}`)
+                    .then(response => ({
+                        reference,
+                        arabicText: response.data.data[0].text,
+                        translatedText: response.data.data[1].text,
+                        surahName: response.data.data[0].surah.name,
+                        surahEnglishName: response.data.data[0].surah.englishName,
+                        surahNumber: response.data.data[0].surah.number,
+                        ayahNumber: response.data.data[0].numberInSurah,
+                        juz: response.data.data[0].juz,
+                        page: response.data.data[0].page,
+                        audioUrl: response.data.data[0].audio,
+                        searchScore: match.score || 0
+                    }))
+                    .catch(error => ({
+                        reference,
+                        error: true,
+                        message: error.message
+                    }));
+            });
+
+            try {
+                const batchResults = await Promise.all(batchPromises);
+                const validResults = batchResults.filter(result => !result.error);
+                results.push(...validResults);
+            } catch (error) {
+                console.error('Batch processing error:', error);
+            }
+        }
+
+        return results;
+    };
+
+    // Handle search errors
     const handleSearchError = (err) => {
         if (axios.isAxiosError(err)) {
             if (err.code === 'ERR_NETWORK') {
@@ -170,6 +166,13 @@ const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loa
             setError('An unexpected error occurred. Please try again.');
         }
         console.error('Search error:', err);
+    };
+
+    // Get search language based on edition
+    const getSearchLanguage = (editionCode) => {
+        if (editionCode.startsWith('ur')) return 'ur';
+        if (editionCode.startsWith('ar')) return 'ar';
+        return 'en';
     };
 
     return (
@@ -197,10 +200,10 @@ const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loa
                 </button>
             </form>
 
-            {results.length > 30 && hasMore && showLoadMore && (
-                <button onClick={loadMore} style={styles.loadMoreButton} disabled={loading}>
-                    {loading ? 'Loading...' : 'Load More'}
-                </button>
+            {loading && page > 1 && (
+                <div style={styles.loading}>
+                    Loading more results...
+                </div>
             )}
         </div>
     );
