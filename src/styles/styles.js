@@ -164,7 +164,24 @@ const styles = {
         flex: '1 1 100%',
         textAlign: 'center',
     },
-
+    loadMoreButton: {
+        display: 'block',
+        margin: '0',
+        padding: '6px 6px',
+        // backgroundColor: '#ec6464',
+        color: 'white',
+        border: 'none',
+        borderRadius: '6px',
+        cursor: 'pointer',
+        fontSize: '16px',
+        transition: 'background-color 0.3s',
+        whiteSpace: 'nowrap',
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        left: 'auto',
+        transform: 'none',
+    },
     '@media (max-width: 992px)': {
         container: {
             maxWidth: '100%',
@@ -201,7 +218,10 @@ const styles = {
         ayahInfoText: {
             textAlign: 'center',
         },
-
+        loadMoreButton: {
+            bottom: '15px',
+            right: '15px',
+        },
     },
     '@media (max-width: 768px)': {
         title: {
@@ -243,7 +263,10 @@ const styles = {
             padding: '8px',
             fontSize: '16px',
         },
-
+        loadMoreButton: {
+            bottom: '10px',
+            right: '10px', // Adjust for smaller screens
+        },
     },
     '@media (max-width: 480px)': {
         title: {
@@ -285,7 +308,10 @@ const styles = {
             padding: '6px',
             fontSize: '14px',
         },
-
+        loadMoreButton: {
+            bottom: '10px',
+            right: '10px', // Adjust for smaller screens
+        },
     },
 };
 
