@@ -9,9 +9,6 @@ const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loa
     const [hasMore, setHasMore] = useState(true);
     const [results, setLocalResults] = useState([]);
     const [showArrow, setShowArrow] = useState(false); // State to control arrow visibility
-    const [lastScrollPosition, setLastScrollPosition] = useState(0); // Track last scroll position
-    const [lastLoadedAyah, setLastLoadedAyah] = useState(null); // Track last loaded ayah
-    const resultsContainerRef = useRef(null); // Ref to the results container
 
     const RESULTS_PER_PAGE = 20; // Define the constant here
 
@@ -20,7 +17,7 @@ const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loa
         timeout: 15000
     });
 
-    // Handle scroll event to show/hide arrow and track last scroll position
+    // Handle scroll event to show/hide arrow
     useEffect(() => {
         const handleScroll = () => {
             const isAtBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
@@ -31,49 +28,17 @@ const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loa
             } else {
                 setShowArrow(false);
             }
-
-            // Track the last scroll position
-            setLastScrollPosition(window.scrollY);
         };
 
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, [hasMore, loading]);
 
-    // Scroll to the last position before loading more
-    const scrollToLastPosition = () => {
-        if (resultsContainerRef.current) {
-            resultsContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    };
-
-    // Scroll to the last loaded ayah
-    const scrollToLastLoadedAyah = () => {
-        if (lastLoadedAyah) {
-            const element = document.getElementById(lastLoadedAyah);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }
-    };
-
     // Load more results
     const loadMore = () => {
         if (!loading && hasMore) {
-            if (lastLoadedAyah) {
-                // Scroll to the last loaded ayah first
-                scrollToLastLoadedAyah();
-                setLastLoadedAyah(null);
-            } else {
-                // Scroll to the last position first
-                scrollToLastPosition();
-
-                // Load more results after scrolling
-                setTimeout(() => {
-                    setPage(prev => prev + 1);
-                    searchQuran(null, false);
-                }, 500); // Adjust the delay as needed
-            }
+            setPage(prev => prev + 1);
+            searchQuran(null, false);
         }
     };
 
@@ -121,8 +86,6 @@ const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loa
                 results.push(...validResults);
                 setLocalResults(prevResults => [...prevResults, ...validResults]);
                 setResults(prevResults => [...prevResults, ...validResults]);
-                // Track the last loaded ayah
-                setLastLoadedAyah(validResults[validResults.length - 1].reference);
             } catch (error) {
                 console.error('Batch processing error:', error);
             }
@@ -143,7 +106,6 @@ const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loa
             setAyahCount(0);
             setPage(1);
             setHasMore(true);
-            setLastLoadedAyah(null); // Reset last loaded ayah on new search
         } else {
             setLoading(true);
         }
@@ -236,7 +198,7 @@ const SearchForm = ({ setResults, setLoading, setError, edition, setEdition, loa
             </form>
 
             {/* Results container with ref */}
-            <div ref={resultsContainerRef}>
+            <div>
                 {/* Render results here */}
             </div>
 
